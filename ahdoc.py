@@ -13,7 +13,7 @@ import hashlib
 from config import secret
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
+# app.debug = False
 
 if not os.path.exists("/tmp/ahdoc"):
     os.mkdir("/tmp/ahdoc/")
@@ -39,27 +39,27 @@ def repo_clone(name):
                            gitname])
     if ret != 0:
         repo_clean(name)
-        return "false", 500
+        return "clone failed", 400
     data = None
     if not os.path.isfile(gitname + "/.ahdoc.yml"):
         repo_clean(name)
-        return "false", 500
+        return "no .ahdoc.yml", 400
     with open(gitname + "/.ahdoc.yml") as f:
         try:
             data = yaml.load(f.read())
         except yaml.YAMLError as ex:
             repo_clean(name)
-            return "false", 500
+            return "yaml error", 400
     print(data)
     ret = subprocess.call(["headerdoc2html", "-j" if data["javadoc"] else "",
                            "-o", tmpname, gitname + "/" + data["path"]])
     if ret != 0:
         repo_clean(name)
-        return "false", 500
+        return "headerdoc2html failed", 400
     ret = subprocess.call(["gatherheaderdoc", tmpname, "index.html"])
     if ret != 0:
         repo_clean(name)
-        return "false", 500
+        return "gatherheaderdoc failed", 400
     if  os.path.exists(docname):
         shutil.rmtree(docname)
     shutil.copytree(tmpname, docname)
@@ -71,16 +71,19 @@ def repo_clone(name):
 def hook(path):
     if request.method == "POST":
         if "X-Hub-Signature" not in request.headers:
-            return "false", 500
-        gh = str.encode(request.headers["X-Hub-Signature"].split("sha1=")[1])
-        us = hmac.new(secret, request.data, hashlib.sha1)
-        if not hmac.compare_digest(gh, us):
-            return "false", 500
+            return "no hub", 400
+        gh = request.headers["X-Hub-Signature"].split("sha1=")[1]
+        us = hmac.new(secret, request.data, hashlib.sha1).hexdigest()
+        if gh != us:
+            print("hash mismatch {} {}".format(gh, us))
+            return "hash mismatch", 400
         data = request.get_json()
         name = data["repository"]["full_name"]
         if ".." in name:
-            return "false", 500
-        return repo_clone(name)
+            return "nice try", 400
+        respo = repo_clone(name)
+        print(respo[0])
+        return respo
     if path == "":
         return render_template("index.html",
                                docs=map(lambda x: x.split("/tmp/ahdoc/doc/")[1],
