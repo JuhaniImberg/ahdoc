@@ -92,9 +92,11 @@ def hook(path):
         return app.send_static_file("style.css")
     else:
         path = path.replace("..", "")
-        if os.path.isdir(path):
+        realpath = os.path.join("/tmp/ahdoc/doc/", path)
+        if os.path.isdir(realpath):
             path = os.path.join(path, "index.html")
-        if os.path.isfile(path):
+            realpath = os.path.join(realpath, "index.html")
+        if os.path.isfile(realpath):
             return send_from_directory("/tmp/ahdoc/doc/", path)
         else:
             return render_template("error.html", code=404), 404
