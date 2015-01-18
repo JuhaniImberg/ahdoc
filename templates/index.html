@@ -2,40 +2,16 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>ahdoc</title>
-        <style>
-         body {
-             font-family: lucida grande, geneva, helvetica, arial, sans-serif;
-             font-size: 10px;
-             text-align: center;
-             max-width: 600px;
-             margin: 3rem auto 0;
-         }
-         a:link, a:visited {
-             text-decoration: none;
-             color: #0000ff;
-             font-family: lucida grande, geneva, helvetica, arial, sans-serif;
-         }
-         a:hover, a:visited:hover {
-             text-decoration: underline;
-             color: #ff6600;
-         }
-         ul {
-             list-style: none;
-             margin: 0;
-             padding: 0;
-             margin-bottom: 2rem;
-         }
-        </style>
+        <title>Auto HeaderDoc</title>
+        <link href="/style.css" rel="stylesheet">
     </head>
     <body>
+        <h1>Auto HeaderDoc</h1>
         <hr>
-        <h2>Auto HeaderDoc</h2>
         <ul>
             {% for doc in docs %}
             <li><a href="/{{doc}}/index.html">{{doc}}</a></li>
             {% endfor  %}
         </ul>
-        <hr>
     </body>
 </html>

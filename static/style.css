@@ -1,0 +1,30 @@
+body {
+    font-family: 'lucida grande', geneva, helvetica, arial, sans-serif;
+    font-size: 13px;
+    margin: 16px;
+}
+a, h1, h2 {
+    font-family: 'lucida grande', geneva, helvetica, arial, sans-serif;
+}
+a {
+    text-decoration: none;
+    color: #36c;
+}
+a:hover {
+    text-decoration: underline;
+}
+li a {
+    font-family: Courier, Consolas, monospace;
+}
+hr {
+    height: 0px;
+    min-height: 0px;
+    border: none;
+    border-bottom: 1px solid #909090;
+}
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 2rem;
+}
