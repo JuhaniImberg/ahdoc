@@ -51,7 +51,9 @@ def repo_clone(name):
             repo_clean(name)
             return "yaml error", 400
     print(data)
-    ret = subprocess.call(["headerdoc2html", "-j" if data["javadoc"] else "",
+    ret = subprocess.call(["headerdoc2html",
+                           "-j" if data.get("javadoc") else "",
+                           "-E" if data.get("everything") else "",
                            "-o", tmpname, gitname + "/" + data["path"]])
     if ret != 0:
         repo_clean(name)
