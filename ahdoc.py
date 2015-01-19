@@ -50,11 +50,26 @@ def repo_clone(name):
         except yaml.YAMLError as ex:
             repo_clean(name)
             return "yaml error", 400
-    print(data)
+
+    targetdir = os.path.join(gitname, data.get("path", ""))
+    targetfiles = []
+    for root, dirs, files in os.walk(targetdir):
+        for file in files:
+            targetfiles.append(os.path.join(root, file))
+
+    if data.get("javadoc"):
+        ret = subprocess.call(["make", "-C", "jd2hd", "clean", "all"])
+        if ret != 0:
+            repo_clean(name)
+            return "jd2hd compile error", 400
+        ret = subprocess.call(["./jd2hd/jd2hd", " ".join(targetfiles)])
+        if ret != 0:
+            repo_clean(name)
+            return "jd2hd run error", 400
+
     ret = subprocess.call(["headerdoc2html",
-                           "-j" if data.get("javadoc") else "",
                            "-E" if data.get("everything") else "",
-                           "-o", tmpname, gitname + "/" + data["path"]])
+                           "-o", tmpname, targetname])
     if ret != 0:
         repo_clean(name)
         return "headerdoc2html failed", 400
