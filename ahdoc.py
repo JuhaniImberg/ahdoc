@@ -62,14 +62,16 @@ def repo_clone(name):
         if ret != 0:
             repo_clean(name)
             return "jd2hd compile error", 400
-        ret = subprocess.call(["./jd2hd/jd2hd", " ".join(targetfiles)])
+        targetfiles.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                           "jd2hd", "jd2hd"))
+        ret = subprocess.call(targetfiles)
         if ret != 0:
             repo_clean(name)
-            return "jd2hd run error", 400
+            return "jd1hd run error" , 400
 
     ret = subprocess.call(["headerdoc2html",
                            "-E" if data.get("everything") else "",
-                           "-o", tmpname, targetname])
+                           "-o", tmpname, targetdir])
     if ret != 0:
         repo_clean(name)
         return "headerdoc2html failed", 400
